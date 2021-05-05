@@ -1,28 +1,40 @@
 <template>
   <div id="app">
-    <img alt="Vue logo" src="./assets/logo.png">
-    <HelloWorld msg="Welcome to Your Vue.js App"/>
+    <a-layout style="Height:100%">
+      <div>
+        <headNav></headNav>
+      </div>
+      <a-layout-content style scoped="minHeight:calc(100% - 250px)">
+        <router-view></router-view>
+      </a-layout-content>
+      <a-layout-footer style="text-align:center; Height:50px">
+        <nfooter />
+      </a-layout-footer>
+    </a-layout>
   </div>
 </template>
 
 <script>
-import HelloWorld from './components/HelloWorld.vue'
+import headNav from './components/headNav'
+import footer from './components/footer'
+
 
 export default {
-  name: 'App',
+  name: 'app',
   components: {
-    HelloWorld
+    'headNav':headNav,
+    'nfooter':footer
   }
 }
 </script>
 
 <style>
 #app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
+  font-family: 'Avenir', Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  text-align: center;
   color: #2c3e50;
-  margin-top: 60px;
+  margin:0 auto;
+  min-width: 1200px;
 }
 </style>
