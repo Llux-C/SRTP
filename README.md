@@ -1,4 +1,4 @@
-# srtp1
+# srtp
 
 ## Project setup
 ```
