@@ -47,6 +47,7 @@ export default {
       chosenCity: cityData[provinceData[0]][0],
       sensors:sensorData[cityData[provinceData[0]][0]],
       chosenSensor:sensorData[cityData[provinceData[0]][0]][0],
+      
     };
   },
   methods: {
