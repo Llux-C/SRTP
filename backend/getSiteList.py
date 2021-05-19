@@ -11,7 +11,7 @@ BASE_DIR = os.path.abspath(os.path.dirname(__file__))
 
 # uri统一资源匹配符
 # SQLALCHEMY_DATABASE_URI配置数据库连接的参数
-app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://root:1234@127.0.0.1:3306/test'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://root:1234@10.181.235.25:3306/test'
 
 # 请求结束后自动提交数据库修改
 app.config['SQLALCHEMY_COMMMIT_ON_TEARDOWN'] = True
@@ -30,13 +30,19 @@ class sites_list(models.Model):
 
 @app.route('/getSiteList', methods=['GET'])
 def function():
+    # city = request.args.get('city')
+    # sites = models.session.query(sites_list).filter(sites_list.city== city ).all()
     sites = models.session.query(sites_list).filter(sites_list.city=='北京').all()
     all_sites = []
     for site in sites:
         all_sites.append(site.id)
     sites_dict = {"sites_list":all_sites}
     return json.dumps(sites_list)
-  #  print(sites_dict)
+    # print(sites_dict)
+
+if __name__ == '__main__':
+    app.run(debug=True)
+
 
 '''
 @route('/getSiteList', methods=['GET'])
