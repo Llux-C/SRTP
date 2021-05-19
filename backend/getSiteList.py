@@ -1,6 +1,6 @@
 import os
 import json
-from flask import Flask
+from flask import Flask, request
 from flask_sqlalchemy import SQLAlchemy
 from flask import render_template
 import pymysql
@@ -33,9 +33,9 @@ class sites_list(models.Model):
 
 @app.route('/getSiteList', methods=['GET'])
 def function():
-    # city = request.args.get('city')
-    # sites = models.session.query(sites_list).filter(sites_list.city== city ).all()
-    sites = models.session.query(sites_list).filter(sites_list.city == '北京').all()
+    city = request.args.get('city')
+    sites = models.session.query(sites_list).filter(sites_list.city== city ).all()
+    # sites = models.session.query(sites_list).filter(sites_list.city == '北京').all()
     all_sites = []
     for site in sites:
         all_sites.append(site.id)
