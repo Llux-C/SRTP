@@ -1,5 +1,5 @@
 <template>
-  <div class="check" style="minHeight:calc(100vh - 139px)">
+  <div class="check" style="minHeight:calc(100vh - 139px);margin:10px;padding:20px">
       <a-row style="minHeight:300px">
           <a-col :span="12">
             <A1 />

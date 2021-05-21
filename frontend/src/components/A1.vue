@@ -28,7 +28,7 @@
             {{ sensor }}
           </a-select-option>
         </a-select>
-        <a-button style="margin: 10px">确定</a-button>
+        <a-button style="margin: 10px" @click="chooseSensor">确定</a-button>
       </div>
     </div>
   </div>
@@ -1639,6 +1639,10 @@ export default {
           this.sensors = res.data.sites_list;
         });
     },
+    chooseSensor(){
+      this.$store.state.chosenSensor=this.chosenSensor
+      console.log(this.$store.state.chosenSensor)
+    }
   },
   mounted: function () {
     this.getSitelist() 

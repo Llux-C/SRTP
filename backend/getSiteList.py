@@ -12,7 +12,7 @@ BASE_DIR = os.path.abspath(os.path.dirname(__file__))
 
 # uri统一资源匹配符
 # SQLALCHEMY_DATABASE_URI配置数据库连接的参数
-app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://root:1234@10.181.235.25:3306/test'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://root:1234@10.162.57.1:3306/test'
 
 # 请求结束后自动提交数据库修改
 app.config['SQLALCHEMY_COMMMIT_ON_TEARDOWN'] = True
@@ -53,7 +53,7 @@ class missing_rate(models.Model):
     id = models.Column(models.String(255))
 
 @app.route('/getSiteList', methods=['GET'])
-def function():
+def getSiteList():
     city = request.args.get('city')
     sites = models.session.query(sites_list).filter(sites_list.city == city ).all()
     # sites = models.session.query(sites_list).filter(sites_list.city == '北京').all()
@@ -66,7 +66,7 @@ def function():
     # print(sites_dict)
 
 @app.route('/getMissing', methods=['GET'])
-def function():
+def getMissing():
     site_id = request.args.get('site_id')
     missing = models.session.query(missing_rate).filter(missing_rate.id == site_id).all()
 
