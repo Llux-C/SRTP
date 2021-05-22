@@ -165,9 +165,11 @@ def function():
     name = 'AQI'
     year = models.session.query(year_value).filter(year_value.loc==site_id).filter(year_value.type==name ).all()
     year_list = []
+    date_list = []
     for i in year:
         year_list.append(i.value)
-    year_dict = {name:year_list}
+        date_list.append(i.date)
+    year_dict = {name:year_list,'date':date_list}
     return json.dumps(year_dict, cls=MyEncoder, indent=4)
 
 
