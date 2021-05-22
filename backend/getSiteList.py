@@ -149,6 +149,27 @@ def function():
 
     return json.dumps(missing_dict, cls=MyEncoder, indent=4)
 
+class year_value(models.Model):
+    __tablename__ = 'year_value'
+    id = models.Column(models.String(255), primary_key=True)
+    type = models.Column(models.String(255))
+    date = models.Column(models.String(255))
+    value = models.Column(models.String(255))
+    loc = models.Column(models.String(255))
+
+@app.route('/getYearValue', methods=['GET'])
+def function():
+    site_id = request.args.get('site_id')
+    site_id='1001A'
+    name = 'AQI'
+    year = models.session.query(year_value).filter(year_value.loc==site_id).filter(year_value.type==name ).all()
+    year_list = []
+    for i in year:
+        year_list.append(i.value)
+    year_dict = {name:year_list}
+    return json.dumps(year_dict, cls=MyEncoder, indent=4)
+
+
 if __name__ == '__main__':
     app.run(debug=True)
 
