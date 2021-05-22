@@ -161,6 +161,7 @@ class year_value(models.Model):
 def function():
     site_id = request.args.get('site_id')
     site_id='1001A'
+    name = request.args.get('name')
     name = 'AQI'
     year = models.session.query(year_value).filter(year_value.loc==site_id).filter(year_value.type==name ).all()
     year_list = []
