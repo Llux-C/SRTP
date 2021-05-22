@@ -1,5 +1,7 @@
 import os
 import json
+import pandas as pd
+from fill_algo import *
 from flask import Flask, request
 from flask_sqlalchemy import SQLAlchemy
 from flask import render_template
@@ -162,7 +164,7 @@ def function():
     site_id = request.args.get('site_id')
     site_id='1001A'
     name = request.args.get('name')
-    name = 'AQI'
+    name = ''
     year = models.session.query(year_value).filter(year_value.loc==site_id).filter(year_value.type==name ).all()
     year_list = []
     date_list = []
@@ -171,6 +173,42 @@ def function():
         date_list.append(i.date)
     year_dict = {name:year_list,'date':date_list}
     return json.dumps(year_dict, cls=MyEncoder, indent=4)
+
+@app.route('/getValue', methods=['GET'])
+def function():
+    city = request.args.get('city')
+    date = request.args.get('date')
+    type = request.args.get('type')
+    fill = request.args.get('fill')
+
+    empty = pd.read_csv(r'./data/empty.csv')
+    loc_file = pd.read_csv("./data/site_list.csv")
+    site_list = loc_file['监测点编码']
+    site_list = site_list.tolist()
+
+    city = '北京'
+    date = '20170101'
+    type = 'AQI'
+    fill = 0
+
+    file = './data/站点_20170101-20171231/china_sites_' + date + '.csv'
+    city_site = loc_file.loc[loc_file['城市'] == city]['监测点编码']
+    col_name = loc_file[loc_file['城市'] == city]['监测点编码'].tolist()
+    col_name.append('date')
+    col_name.append('hour')
+    col_name.append('type')
+    data_df = pd.read_csv(file)
+    data_df = data_df.loc[:, col_name]
+    data_df = data_df[data_df['type'] == type]
+    data_final = pd.merge(empty, data_df, how='left')
+    if fill==0:
+        return json.dumps(data_final.to_json(), cls=MyEncoder, indent=4)
+    # print(data_final.to_json())
+    else:
+        df = FMV(data_final, 7, 4, 0.85, city_site)
+        return json.dumps(df.to_json(), cls=MyEncoder, indent=4)
+
+
 
 
 if __name__ == '__main__':
