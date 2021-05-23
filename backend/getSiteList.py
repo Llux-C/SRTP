@@ -221,12 +221,18 @@ def getValue():
     data_df = data_df.loc[:, col_name]
     data_df = data_df[data_df['type'] == type]
     data_final = pd.merge(empty, data_df, how='left')
+    #生成对应json格式内容
+    value_dict = {'hour': data_final['hour'].tolist()}
+
     if fill==0:
-        return json.dumps(data_final.to_json(), cls=MyEncoder, indent=4)
-    # print(data_final.to_json())
+        for site_id in city_site:
+            value_dict[site_id] = data_final[site_id].tolist()
+        return json.dumps(value_dict, cls=MyEncoder, indent=4)
     else:
         df = FMV(data_final, 7, 4, 0.85, city_site)
-        return json.dumps(df.to_json(), cls=MyEncoder, indent=4)
+        for site_id in city_site:
+            value_dict[site_id] = df[site_id].tolist()
+        return json.dumps(value_dict, cls=MyEncoder, indent=4)
 
 
 
