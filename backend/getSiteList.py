@@ -227,13 +227,22 @@ def getValue():
     if fill==0:
         data_final.astype(str)
         data_final = data_final.apply(lambda x: x.replace('\n', '').replace('\r', ''))
+        # data_final[np.isnan] =
         json_dict = {}
         for i in data_final.columns:
             # print(i)
             json_list = []
             for j in range(0, 24):
-                json_list.append(float(data_final[i][j]))
+                json_list.append((data_final[i][j]))
+            for k in range(0, len(json_list)) :
+                if isinstance(json_list[k], np.int64):
+                    json_list[k] = int(json_list[k])
+                elif isinstance(json_list[k], np.float64):
+                    json_list[k] = float(json_list[k])
+                if (json_list[k] != json_list[k]):
+                    json_list[k] = 0
             json_dict[i] = json_list
+        print(json_dict)
         return json.dumps(json_dict, cls=MyEncoder, indent=4)
     else:
         data_final = FMV(data_final, 7, 4, 0.85, city_site)
@@ -243,9 +252,9 @@ def getValue():
         for i in data_final.columns:
             json_list = []
             for j in range(0, 24):
-                json_list.append(float(data_final[i][j]))
+                json_list.append((data_final[i][j]))
             json_dict[i] = json_list
-        return json.dumps(json_dict, cls=MyEncoder, indent=4).replace("\n","")
+        return json.dumps(json_dict, cls=MyEncoder, indent=4)
 
 
 

@@ -1,5 +1,5 @@
 import json
-
+import numpy as np
 
 class MyEncoder(json.JSONEncoder):
 
@@ -11,4 +11,6 @@ class MyEncoder(json.JSONEncoder):
         """
         if isinstance(obj, bytes):
             return str(obj, encoding='utf-8')
+        elif isinstance(obj, np.int64):
+            return int(obj)
         return json.JSONEncoder.default(self, obj)
