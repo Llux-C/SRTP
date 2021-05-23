@@ -1,7 +1,7 @@
 <template>
   <div>
     <h1 style="font-size: 20px; margin-top: 20px; margin-left: 40px">
-      数据展示
+      缺失率数据
     </h1>
     <div style="">
       <div style="">

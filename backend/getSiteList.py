@@ -201,16 +201,17 @@ def getValue():
     date = request.args.get('date')
     pollu = request.args.get('pollu')
     fill = request.args.get('fill')
+    fill = int(fill)
 
     empty = pd.read_csv(r'./data/empty.csv')
     loc_file = pd.read_csv("./data/site_list.csv")
     site_list = loc_file['监测点编码']
     site_list = site_list.tolist()
 
-    city = '北京'
-    date = '20170101'
-    pollu = 'AQI'
-    fill = 0
+    # city = '北京'
+    # date = '20170101'
+    # pollu = 'AQI'
+    # fill = 0
 
     file = './data/站点_20170101-20171231/china_sites_' + date + '.csv'
     city_site = loc_file.loc[loc_file['城市'] == city]['监测点编码']
@@ -253,6 +254,13 @@ def getValue():
             json_list = []
             for j in range(0, 24):
                 json_list.append((data_final[i][j]))
+            for k in range(0, len(json_list)) :
+                if isinstance(json_list[k], np.int64):
+                    json_list[k] = int(json_list[k])
+                elif isinstance(json_list[k], np.float64):
+                    json_list[k] = float(json_list[k])
+                if (json_list[k] != json_list[k]):
+                    json_list[k] = 0
             json_dict[i] = json_list
         return json.dumps(json_dict, cls=MyEncoder, indent=4)
 

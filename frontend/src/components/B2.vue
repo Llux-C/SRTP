@@ -98,18 +98,20 @@ export default {
           .get("/api/getValue", {
             params: {
               city: this.$store.state.chosenCity,
-              pollu: this.$store.state.chosenWaste,
               date: this.$store.state.chosenDate,
+              pollu: this.$store.state.chosenWaste,
               fill: this.$store.state.fill,
             },
           })
           .then((res) => {
             this.data = [];
-            // console.log(res.data);
+            console.log(typeof(res.data))
+            console.log(res.data)
+            console.log(res.data.hour)
             // var d = JSON.stringify(res.data)
             // var e = JSON.parse(d)
             // console.log(e.hour)
-            console.log(res.data.hour)
+            
             for(let i =0;i<=23;i++)
             {
               let json = {
@@ -117,11 +119,11 @@ export default {
               }
               for(let j=1;j<this.columns.length;j++)
               {
-                // let param = this.columns[j].title
+                let param = this.columns[j].title
 
                 // console.log(param)
                 // console.log(res.data)
-                // json[param] = res.data[param][i]
+                json[param] = res.data[param][i]
               }
               this.data.push(json)
             }
