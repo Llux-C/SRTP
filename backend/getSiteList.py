@@ -199,7 +199,7 @@ def getDate():
 def getValue():
     city = request.args.get('city')
     date = request.args.get('date')
-    type = request.args.get('type')
+    pollu = request.args.get('pollu')
     fill = request.args.get('fill')
 
     empty = pd.read_csv(r'./data/empty.csv')
@@ -209,7 +209,7 @@ def getValue():
 
     city = '北京'
     date = '20170101'
-    type = 'AQI'
+    pollu = 'AQI'
     fill = 0
 
     file = './data/站点_20170101-20171231/china_sites_' + date + '.csv'
@@ -220,20 +220,19 @@ def getValue():
     col_name.append('type')
     data_df = pd.read_csv(file)
     data_df = data_df.loc[:, col_name]
-    data_df = data_df[data_df['type'] == type]
+    data_df = data_df[data_df['type'] == pollu]
     data_final = pd.merge(empty, data_df, how='left')
     #生成对应json格式内容
-    value_dict = {'hour': np.array(data_final['hour'])}
 
     if fill==0:
-        for site_id in city_site:
-            value_dict[site_id] = np.array(data_final[site_id])
-        return json.dumps(value_dict, cls=MyEncoder, indent=4)
+        data_final = data_final.drop(['type', 'date'], axis=1)
+        json_list = data_final.to_dict(orient="list")
+        return json.dumps(json_list, cls=MyEncoder, indent=4)
     else:
         df = FMV(data_final, 7, 4, 0.85, city_site)
-        for site_id in city_site:
-            value_dict[site_id] = np.array(df[site_id])
-        return json.dumps(value_dict, cls=MyEncoder, indent=4)
+        df = df.drop(['type', 'date'], axis=1)
+        json_list = df.to_dict(orient="list")
+        return json.dumps(json_list, cls=MyEncoder, indent=4)
 
 
 
