@@ -92,6 +92,9 @@ export default {
     getValue() {
       var param = this.time2;
       this.time2 = this.$store.state.time;
+      var pollu = this.$store.state.chosenWaste;
+      if (this.$store.state.chosenWaste == "PM25") pollu = "PM2.5";
+      if (this.$store.state.chosenWaste == "PM25_24h") pollu = "PM2.5_24h";
       if (param != this.time2) {
         console.log("getValue");
         this.axios
@@ -99,35 +102,34 @@ export default {
             params: {
               city: this.$store.state.chosenCity,
               date: this.$store.state.chosenDate,
-              pollu: this.$store.state.chosenWaste,
+              pollu: pollu,
               fill: this.$store.state.fill,
             },
           })
           .then((res) => {
             this.data = [];
-            console.log(typeof(res.data))
-            console.log(res.data)
-            console.log(res.data.hour)
+            console.log(typeof res.data);
+            console.log(res.data);
+            console.log(res.data.hour);
             // var d = JSON.stringify(res.data)
             // var e = JSON.parse(d)
             // console.log(e.hour)
-            
-            for(let i =0;i<=23;i++)
-            {
+
+            for (let i = 0; i <= 23; i++) {
               let json = {
-                hour:i,
-              }
-              for(let j=1;j<this.columns.length;j++)
-              {
-                let param = this.columns[j].title
+                hour: i,
+              };
+              for (let j = 1; j < this.columns.length; j++) {
+                let param = this.columns[j].title;
 
                 // console.log(param)
                 // console.log(res.data)
-                json[param] = res.data[param][i]
+                if (res.data[param][i] == 0) json[param] = "";
+                else json[param] = res.data[param][i];
               }
-              this.data.push(json)
+              this.data.push(json);
             }
-            console.log(this.data)
+            console.log(this.data);
           });
       }
     },
