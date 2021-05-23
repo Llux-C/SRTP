@@ -225,14 +225,27 @@ def getValue():
     #生成对应json格式内容
 
     if fill==0:
-        data_final = data_final.drop(['type', 'date'], axis=1)
-        json_list = data_final.to_dict(orient="list")
-        return json.dumps(json_list, cls=MyEncoder, indent=4)
+        data_final.astype(str)
+        data_final = data_final.apply(lambda x: x.replace('\n', '').replace('\r', ''))
+        json_dict = {}
+        for i in data_final.columns:
+            # print(i)
+            json_list = []
+            for j in range(0, 24):
+                json_list.append(float(data_final[i][j]))
+            json_dict[i] = json_list
+        return json.dumps(json_dict, cls=MyEncoder, indent=4)
     else:
-        df = FMV(data_final, 7, 4, 0.85, city_site)
-        df = df.drop(['type', 'date'], axis=1)
-        json_list = df.to_dict(orient="list")
-        return json.dumps(json_list, cls=MyEncoder, indent=4)
+        data_final = FMV(data_final, 7, 4, 0.85, city_site)
+        data_final.astype(str)
+        data_final = data_final.apply(lambda x: x.replace('\n', '').replace('\r', ''))
+        json_dict = {}
+        for i in data_final.columns:
+            json_list = []
+            for j in range(0, 24):
+                json_list.append(float(data_final[i][j]))
+            json_dict[i] = json_list
+        return json.dumps(json_dict, cls=MyEncoder, indent=4)
 
 
 
