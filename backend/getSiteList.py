@@ -1,5 +1,6 @@
 import os
 import json
+import numpy as np
 import pandas as pd
 from fill_algo import *
 from flask import Flask, request
@@ -222,16 +223,16 @@ def getValue():
     data_df = data_df[data_df['type'] == type]
     data_final = pd.merge(empty, data_df, how='left')
     #生成对应json格式内容
-    value_dict = {'hour': data_final['hour'].tolist()}
+    value_dict = {'hour': np.array(data_final['hour'])}
 
     if fill==0:
         for site_id in city_site:
-            value_dict[site_id] = data_final[site_id].tolist()
+            value_dict[site_id] = np.array(data_final[site_id])
         return json.dumps(value_dict, cls=MyEncoder, indent=4)
     else:
         df = FMV(data_final, 7, 4, 0.85, city_site)
         for site_id in city_site:
-            value_dict[site_id] = df[site_id].tolist()
+            value_dict[site_id] = np.array(df[site_id])
         return json.dumps(value_dict, cls=MyEncoder, indent=4)
 
 
