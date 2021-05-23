@@ -20,7 +20,7 @@ import A2 from '../components/A2'
 import A3 from '../components/A3'
 
 export default{
-    name: 'calculate',
+    name: 'check',
     components: {
         'A1':A1,
         'A2':A2,

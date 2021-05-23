@@ -1,32 +1,32 @@
 <template>
-  <div class="check" style="minHeight:calc(100vh - 139px)">
+  <div class="calculate" style="minHeight:calc(100vh - 139px);margin:10px;padding:20px">
       <a-row style="minHeight:300px">
           <a-col :span="12">
-            <A1 />
+            <B1 />
           </a-col>
           <a-col :span="12">
-            <A2 />
+            <B2 />
           </a-col>
       </a-row>
   </div>
 </template>
 
 <script>
-import A1 from '../components/A1'
-import A2 from '../components/A2'
+import B1 from '../components/B1'
+import B2 from '../components/B2'
 
 export default{
     name: 'calculate',
     components: {
-        'A1':A1,
-        'A2':A2,
+        'B1':B1,
+        'B2':B2,
   }
 }
 </script>
 
 
 <style scoped>
-.check{
+.calculate{
   background-color: white;
 }
 </style>
