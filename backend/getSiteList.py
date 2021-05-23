@@ -233,7 +233,7 @@ def getValue():
             # print(i)
             json_list = []
             for j in range(0, 24):
-                json_list.append(float(data_final[i][j]))
+                json_list.append(data_final[i][j])
             json_dict[i] = json_list
         return json.dumps(json_dict, cls=MyEncoder, indent=4)
     else:
@@ -244,7 +244,7 @@ def getValue():
         for i in data_final.columns:
             json_list = []
             for j in range(0, 24):
-                json_list.append(float(data_final[i][j]))
+                json_list.append(data_final[i][j])
             json_dict[i] = json_list
         return json.dumps(json_dict, cls=MyEncoder, indent=4).replace("\n","")
 
