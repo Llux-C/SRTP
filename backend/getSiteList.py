@@ -222,6 +222,7 @@ def getValue():
     data_df = data_df.loc[:, col_name]
     data_df = data_df[data_df['type'] == pollu]
     data_final = pd.merge(empty, data_df, how='left')
+    data_final = data_final.drop(['type', 'date'], axis=1)
     #生成对应json格式内容
 
     if fill==0:
