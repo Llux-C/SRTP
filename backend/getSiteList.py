@@ -14,7 +14,7 @@ BASE_DIR = os.path.abspath(os.path.dirname(__file__))
 
 # uri统一资源匹配符
 # SQLALCHEMY_DATABASE_URI配置数据库连接的参数
-app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://root:1234@10.162.57.1:3306/test'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://root:1234@10.181.210.175:3306/test'
 
 # 请求结束后自动提交数据库修改
 app.config['SQLALCHEMY_COMMMIT_ON_TEARDOWN'] = True
@@ -160,22 +160,42 @@ class year_value(models.Model):
     loc = models.Column(models.String(255))
 
 @app.route('/getYearValue', methods=['GET'])
-def function():
+def getYearValue():
     site_id = request.args.get('site_id')
-    site_id='1001A'
+    # site_id='1001A'
     name = request.args.get('name')
-    name = ''
+    # name = ''
     year = models.session.query(year_value).filter(year_value.loc==site_id).filter(year_value.type==name ).all()
     year_list = []
     date_list = []
     for i in year:
         year_list.append(i.value)
-        date_list.append(i.date)
+        date = str(int(float(i.date)))
+        date_list.append(date[4:])
     year_dict = {name:year_list,'date':date_list}
     return json.dumps(year_dict, cls=MyEncoder, indent=4)
 
+
+@app.route('/getDate', methods=['GET'])
+def getDate():
+    site_id = request.args.get('site_id')
+    # site_id='1001A'
+    name = request.args.get('name')
+    # name = ''
+    year = models.session.query(year_value).filter(year_value.loc==site_id).filter(year_value.type==name ).all()
+    year_list = []
+    date_list = []
+    for i in year:
+        year_list.append(i.value)
+        date = str(int(float(i.date)))
+        date_list.append(date)
+    year_dict = {name:year_list,'date':date_list}
+    print(date_list)
+    return json.dumps(year_dict, cls=MyEncoder, indent=4)
+
+
 @app.route('/getValue', methods=['GET'])
-def function():
+def getValue():
     city = request.args.get('city')
     date = request.args.get('date')
     type = request.args.get('type')
@@ -207,7 +227,6 @@ def function():
     else:
         df = FMV(data_final, 7, 4, 0.85, city_site)
         return json.dumps(df.to_json(), cls=MyEncoder, indent=4)
-
 
 
 
