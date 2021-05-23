@@ -245,7 +245,7 @@ def getValue():
             for j in range(0, 24):
                 json_list.append(float(data_final[i][j]))
             json_dict[i] = json_list
-        return json.dumps(json_dict, cls=MyEncoder, indent=4)
+        return json.dumps(json_dict, cls=MyEncoder, indent=4).replace("\n","")
 
 
 
