@@ -1,17 +1,20 @@
 <template>
   <div class="home" style="minHeight:calc(100vh - 139px)">
-    <a-carousel autoplay autoplaySpeed=200>
+    <a-carousel autoplay autoplaySpeed=200 style="">
       <!-- photo 1 -->
       <div>
-        <!-- <a-button ghost  :size="large" style="position:absolute; left:18%; top:60%;" >立即体验</a-button> -->
-        <a @click="goTo('/login')"><img src="" /></a>
+        <a @click="goTo('/check')"><img src="../assets/1.jpg" /></a>
       </div>
       <!-- photo 2 -->
       <div>
-        <!-- <a-button ghost  :size="large" style="position:absolute; left:18%; top:60%;" >立即体验</a-button> -->
-        <a @click="goTo('/login')"><img src="" /></a>
+        <a @click="goTo('/check')"><img src="../assets/2.jpg" /></a>
       </div>
     </a-carousel>
+
+    <div class="home-body">
+        <h1 class="h1">在线城市异构数据可视化系统</h1>
+        <p class="text"> </p>
+    </div>
   </div>
 </template>
 
@@ -30,8 +33,6 @@ export default {
 }
 </script>
 
-
-
 <style scoped>
 .home{
   text-align: center;
@@ -49,18 +50,6 @@ export default {
 
 .home-body{
   padding: 0 50px;
-}
-
-.g-div{
-  width:50%;
-  height:100%;
-  float:right;
-  min-width:320px;
-  min-height:180px;
-}
-
-.graph{
-  width:80%;
 }
 
 .ant-carousel >>> .slick-slide {
