@@ -121,6 +121,7 @@ export default {
 
                 // console.log(param)
                 // console.log(res.data)
+                console.log(res.data)
                 var todo = res.data[param][i]
 
                 var dot = String(todo).indexOf(".");

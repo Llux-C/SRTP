@@ -24,8 +24,9 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = True
 
 models = SQLAlchemy(app)  # 关联sqlalchemy和flask
 
-#class definition
-#list of all sites
+
+# class definition
+# list of all sites
 class sites_list(models.Model):
     __tablename__ = 'sites_list'
     id = models.Column(models.String(255), primary_key=True)
@@ -34,10 +35,11 @@ class sites_list(models.Model):
     latitude = models.Column(models.String(255))
     longitude = models.Column(models.String(255))
 
-#missing rate of all sites from week1 to week53
+
+# missing rate of all sites from week1 to week53
 class missing_rate(models.Model):
     __tablename__ = 'missing_rate'
-    week = models.Column(models.String(255),primary_key=True)
+    week = models.Column(models.String(255), primary_key=True)
     AQI = models.Column(models.String(255))
     PM25 = models.Column(models.String(255))
     PM25_24h = models.Column(models.String(255))
@@ -55,10 +57,11 @@ class missing_rate(models.Model):
     CO_24h = models.Column(models.String(255))
     id = models.Column(models.String(255))
 
+
 @app.route('/getSiteList', methods=['GET'])
 def getSiteList():
     city = request.args.get('city')
-    sites = models.session.query(sites_list).filter(sites_list.city == city ).all()
+    sites = models.session.query(sites_list).filter(sites_list.city == city).all()
     # sites = models.session.query(sites_list).filter(sites_list.city == '北京').all()
     all_sites = []
     for site in sites:
@@ -68,12 +71,13 @@ def getSiteList():
     return json.dumps(sites_dict, cls=MyEncoder, indent=4)
     # print(sites_dict)
 
+
 @app.route('/getMissing', methods=['GET'])
 def getMissing():
     site_id = request.args.get('site_id')
     missing = models.session.query(missing_rate).filter(missing_rate.id == site_id).all()
 
-    #data process
+    # data process
     missing_value_AQI = []
     for week in missing:
         missing_value_AQI.append(week.AQI)
@@ -152,6 +156,7 @@ def getMissing():
 
     return json.dumps(missing_dict, cls=MyEncoder, indent=4)
 
+
 class year_value(models.Model):
     __tablename__ = 'year_value'
     id = models.Column(models.String(255), primary_key=True)
@@ -160,20 +165,21 @@ class year_value(models.Model):
     value = models.Column(models.String(255))
     loc = models.Column(models.String(255))
 
+
 @app.route('/getYearValue', methods=['GET'])
 def getYearValue():
     site_id = request.args.get('site_id')
     # site_id='1001A'
     name = request.args.get('name')
     # name = ''
-    year = models.session.query(year_value).filter(year_value.loc==site_id).filter(year_value.type==name ).all()
+    year = models.session.query(year_value).filter(year_value.loc == site_id).filter(year_value.type == name).all()
     year_list = []
     date_list = []
     for i in year:
         year_list.append(i.value)
         date = str(int(float(i.date)))
         date_list.append(date[4:])
-    year_dict = {name:year_list,'date':date_list}
+    year_dict = {name: year_list, 'date': date_list}
     return json.dumps(year_dict, cls=MyEncoder, indent=4)
 
 
@@ -183,14 +189,14 @@ def getDate():
     # site_id='1001A'
     name = request.args.get('name')
     # name = ''
-    year = models.session.query(year_value).filter(year_value.loc==site_id).filter(year_value.type==name ).all()
+    year = models.session.query(year_value).filter(year_value.loc == site_id).filter(year_value.type == name).all()
     year_list = []
     date_list = []
     for i in year:
         year_list.append(i.value)
         date = str(int(float(i.date)))
         date_list.append(date)
-    year_dict = {name:year_list,'date':date_list}
+    year_dict = {name: year_list, 'date': date_list}
     print(date_list)
     return json.dumps(year_dict, cls=MyEncoder, indent=4)
 
@@ -221,14 +227,14 @@ def getValue():
     col_name.append('type')
     data_df = pd.read_csv(file)
     data_df = data_df[data_df['type'] == pollu]
-    #df_site = pd.DataFrame(columns=col_name)
-    #data_df = pd.merge(df_site, data_df, how='right')
+    # df_site = pd.DataFrame(columns=col_name)
+    # data_df = pd.merge(df_site, data_df, how='right')
     data_df = data_df.loc[:, col_name]
     data_final = pd.merge(empty, data_df, how='left')
     data_final = data_final.drop(['type', 'date'], axis=1)
-    #生成对应json格式内容
+    # 生成对应json格式内容
 
-    if fill==0:
+    if fill == 0:
         data_final.astype(str)
         data_final = data_final.apply(lambda x: x.replace('\n', '').replace('\r', ''))
         # data_final[np.isnan] =
@@ -238,7 +244,7 @@ def getValue():
             json_list = []
             for j in range(0, 24):
                 json_list.append((data_final[i][j]))
-            for k in range(0, len(json_list)) :
+            for k in range(0, len(json_list)):
                 if isinstance(json_list[k], np.int64):
                     json_list[k] = int(json_list[k])
                 elif isinstance(json_list[k], np.float64):
@@ -257,7 +263,7 @@ def getValue():
             json_list = []
             for j in range(0, 24):
                 json_list.append((data_final[i][j]))
-            for k in range(0, len(json_list)) :
+            for k in range(0, len(json_list)):
                 if isinstance(json_list[k], np.int64):
                     json_list[k] = int(json_list[k])
                 elif isinstance(json_list[k], np.float64):
@@ -272,13 +278,13 @@ def getValue():
 def getLocation():
     site_id = request.args.get('site_id')
     site_id = str(site_id)
-    sites = models.session.query(sites_list).filter(sites_list.id == site_id ).all()
+    sites = models.session.query(sites_list).filter(sites_list.id == site_id).all()
     location = []
     for site in sites:
         location.append(float(site.latitude))
         location.append(float(site.longitude))
     sites_dict = {"location": location}
-    #print(sites_dict)
+    # print(sites_dict)
     return json.dumps(sites_dict, cls=MyEncoder, indent=4)
     # print(sites_dict)
 
@@ -299,4 +305,3 @@ def function():
     # print(tp_list)
     return json.dumps(tp_list)
 '''
-
