@@ -283,3 +283,16 @@ def function():
     # print(tp_list)
     return json.dumps(tp_list)
 '''
+
+@app.route('/getLocation', methods=['GET'])
+def getLocation():
+    site_id = request.args.get('site_id')
+    sites = models.session.query(sites_list).filter(sites_list.id == site_id ).all()
+    location = []
+    for site in sites:
+        location.append(float(site.latitude))
+        location.append(float(site.longitude))
+    sites_dict = {"location": location}
+    #print(sites_dict)
+    return json.dumps(sites_dict, cls=MyEncoder, indent=4)
+    # print(sites_dict)
