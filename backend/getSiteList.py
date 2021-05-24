@@ -221,8 +221,8 @@ def getValue():
     col_name.append('type')
     data_df = pd.read_csv(file)
     data_df = data_df[data_df['type'] == pollu]
-    df_site = pd.DataFrame(columns=col_name)
-    data_df = pd.merge(df_site, data_df, how='right')
+    #df_site = pd.DataFrame(columns=col_name)
+    #data_df = pd.merge(df_site, data_df, how='right')
     data_df = data_df.loc[:, col_name]
     data_final = pd.merge(empty, data_df, how='left')
     data_final = data_final.drop(['type', 'date'], axis=1)
