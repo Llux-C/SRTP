@@ -108,9 +108,6 @@ export default {
           })
           .then((res) => {
             this.data = [];
-            console.log(typeof res.data);
-            console.log(res.data);
-            console.log(res.data.hour);
             // var d = JSON.stringify(res.data)
             // var e = JSON.parse(d)
             // console.log(e.hour)
@@ -124,8 +121,18 @@ export default {
 
                 // console.log(param)
                 // console.log(res.data)
-                if (res.data[param][i] == 0) json[param] = "";
-                else json[param] = res.data[param][i];
+                var todo = res.data[param][i]
+
+                var dot = String(todo).indexOf(".");
+                if (dot != -1) {
+                  var dotCnt = String(todo).substring(dot + 1, todo.length);
+                  if (dotCnt.length > 2) {
+                    todo = todo.toFixed(2);
+                  }
+                }
+
+                if (todo == 0) json[param] = "";
+                else json[param] = todo;
               }
               this.data.push(json);
             }

@@ -31,9 +31,17 @@
         <a-button style="margin: 10px" @click="chooseSensor">确定</a-button>
       </div>
     </div>
+    <div>
+      <div id="map"></div>
+    </div>
   </div>
 </template>
+
 <script>
+import L from "leaflet";
+import "leaflet/dist/leaflet.css";
+
+var map;
 const provs = [
   { label: "北京", value: "北京" },
   { label: "天津", value: "天津" },
@@ -80,11 +88,13 @@ export default {
       sensors: [],
       chosenProv: "",
       chosenSensor: "",
+
+      center: [39.8673, 116.366],
     };
   },
   methods: {
     handleProvinceChange(value) {
-      console.log(value)
+      console.log(value);
       let tempCity = [];
       this.citys = [];
       this.selectCity = "";
@@ -1613,7 +1623,7 @@ export default {
         }
       }
       this.citys = tempCity;
-      console.log(this.citys)
+      console.log(this.citys);
     },
     handleCityChange(value) {
       this.axios
@@ -1623,9 +1633,42 @@ export default {
           },
         })
         .then((res) => {
-          console.log(res)
+          console.log(res);
           console.log(res.data);
           this.sensors = res.data.sites_list;
+          var point = this.sensors[0];
+          console.log(point);
+          this.axios
+            .get("/api/getLocation", {
+              params: {
+                site_id: point,
+              },
+            })
+            .then((r) => {
+              console.log(r.data);
+              this.center = r.data.location;
+              map.setView(this.center, 10);
+            });
+
+          var locations = [];
+          for (let i = 0; i < this.sensors.length; i++) {
+            this.axios
+              .get("/api/getLocation", {
+                params: {
+                  site_id: this.sensors[i],
+                },
+              })
+              .then((r) => {
+                locations.push(r.data.location);
+                L.circle(r.data.location, 600, {
+                  color: "#d7c6ff",
+                  fillColor: "#0000ff",
+                  fillOpacity: 0.5,
+                })
+                  .addTo(map)
+                  .bindPopup(this.sensors[i]);
+              });
+          }
         });
     },
     getSitelist() {
@@ -1639,13 +1682,50 @@ export default {
           this.sensors = res.data.sites_list;
         });
     },
-    chooseSensor(){
-      this.$store.state.chosenSensor=this.chosenSensor
-      console.log(this.$store.state.chosenSensor)
-    }
+    chooseSensor() {
+      this.$store.state.chosenSensor = this.chosenSensor;
+      console.log(this.$store.state.chosenSensor);
+    },
+    drawMap() {
+      map = L.map("map", {
+        minZoom: 3,
+        maxZoom: 14,
+        center: this.center,
+        zoom: 10,
+        zoomSnap: 0.1,
+        zoomControl: true,
+        attributionControl: false,
+        touchZoom: true,
+      });
+      this.map = map;
+      window.map = map;
+      const tileUrl =
+        "https://api.mapbox.com/styles/v1/mapbox/streets-v11/tiles/{z}/{x}/{y}?access_token=pk.eyJ1IjoiY3ktbGx1IiwiYSI6ImNraHZsMGYzYjBnNnMyc28yYXlvd256NnYifQ.TTfaDTXXNPAOAQ6_lqIFEg";
+      L.tileLayer(tileUrl, {
+        tileSize: 512,
+        zoomOffset: -1,
+      }).addTo(map);
+      var popup = L.popup();
+      function onMapClick(e) {
+        popup
+          .setLatLng(e.latlng)
+          .setContent("You clicked the map at " + e.latlng.toString())
+          .openOn(map);
+      }
+      map.on("click", onMapClick);
+    },
   },
   mounted: function () {
-    this.getSitelist() 
+    this.handleCityChange("北京")
+    this.drawMap();
   },
 };
 </script>
+
+<style scoped>
+#map {
+  margin: 0 auto;
+  width: 80%;
+  height: 400px;
+}
+</style>

@@ -15,7 +15,7 @@ BASE_DIR = os.path.abspath(os.path.dirname(__file__))
 
 # uri统一资源匹配符
 # SQLALCHEMY_DATABASE_URI配置数据库连接的参数
-app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://root:1234@10.181.210.175:3306/test'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://root:1234@10.181.226.47:3306/test'
 
 # 请求结束后自动提交数据库修改
 app.config['SQLALCHEMY_COMMMIT_ON_TEARDOWN'] = True
@@ -266,6 +266,20 @@ def getValue():
         return json.dumps(json_dict, cls=MyEncoder, indent=4)
 
 
+@app.route('/getLocation', methods=['GET'])
+def getLocation():
+    site_id = request.args.get('site_id')
+    site_id = str(site_id)
+    sites = models.session.query(sites_list).filter(sites_list.id == site_id ).all()
+    location = []
+    for site in sites:
+        location.append(float(site.latitude))
+        location.append(float(site.longitude))
+    sites_dict = {"location": location}
+    #print(sites_dict)
+    return json.dumps(sites_dict, cls=MyEncoder, indent=4)
+    # print(sites_dict)
+
 
 if __name__ == '__main__':
     app.run(debug=True)
@@ -284,15 +298,3 @@ def function():
     return json.dumps(tp_list)
 '''
 
-@app.route('/getLocation', methods=['GET'])
-def getLocation():
-    site_id = request.args.get('site_id')
-    sites = models.session.query(sites_list).filter(sites_list.id == site_id ).all()
-    location = []
-    for site in sites:
-        location.append(float(site.latitude))
-        location.append(float(site.longitude))
-    sites_dict = {"location": location}
-    #print(sites_dict)
-    return json.dumps(sites_dict, cls=MyEncoder, indent=4)
-    # print(sites_dict)
