@@ -5,9 +5,8 @@ import numpy as np
 import glob,os
 
 empty = pd.read_csv(r'./data/empty.csv')
-loc_file = pd.read_csv("./data/site_list.csv")
-site_list = loc_file['监测点编码']
-site_list = site_list.tolist()
+site_list = pd.read_csv("site_list.csv")
+
 
 # 用于将角度转换为弧度
 def ConvertDegreesToRadians(degrees):
@@ -40,13 +39,17 @@ def Distance(lat1, lon1, lat2, lon2):
     return 2 * EARTH_RADIUS * math.asin(math.sqrt(h))
 
 
-
+# 使用示例
+# d = Distance(39.8673,116.366,40.2865,116.17)
 def cal_dist(loc1, loc2):
     a = site_list.loc[site_list['监测点编码'] == loc1]['纬度'].iloc[0]
     b = site_list.loc[site_list['监测点编码'] == loc1]['经度'].iloc[0]
     c = site_list.loc[site_list['监测点编码'] == loc2]['纬度'].iloc[0]
     d = site_list.loc[site_list['监测点编码'] == loc2]['经度'].iloc[0]
     return Distance(a, b, c, d)
+
+
+# test = cal_dist('1013A','1014A')
 
 
 # IDW
@@ -60,9 +63,11 @@ def IDW(df, hour, loc, alpha, city_site):
         if not (pd.isnull(df.at[hour, city_site[i]])) and city_site[i] != loc:
             sum = sum + df.at[hour, city_site[i]] * pow(cal_dist(loc, city_site[i]), (-alpha))
             dist_sum = dist_sum + pow(cal_dist(loc, city_site[i]), (-alpha))
-    #print(sum / dist_sum)
+    # print(sum/dist_sum)
     return (sum / dist_sum)
 
+
+# IDW(data_final,12,'1013A',1,city_site)
 
 # SES
 def SES(df, hour, loc, beta):
@@ -73,9 +78,9 @@ def SES(df, hour, loc, beta):
             # print(df.at[i,loc])
             nume = nume + df.at[i, loc] * beta * pow(1 - beta, abs(hour - i))
             deno = deno + beta * pow(1 - beta, abs(hour - i))
-    #print(nume)
-    #print(deno)
-    #print(nume / deno)
+    # print(nume)
+    # print(deno)
+    # print(nume/deno)
     return (nume / deno)
 
 
@@ -83,6 +88,9 @@ def SES(df, hour, loc, beta):
 def sim_s(df, loc1, loc2, hour, omega):
     start = hour - (omega - 1) / 2
     end = hour + (omega - 1) / 2
+    if hour == 0:
+        start = 1
+        end = start + omega
     if start < 0:
         start = 0
     if end > 23:
@@ -104,13 +112,14 @@ def UCF(df, hour, loc, omega, city_site):
     sum = 0
     nume = 0
     deno = 0
+    # print(length)
     for i in range(length):
         if city_site[i] != loc and not pd.isnull(df.at[hour, city_site[i]]):
             sim = sim_s(df, loc, city_site[i], hour, omega)
-            #print(df.at[hour, city_site[i]], ',', sim)
+            print(df.at[hour, city_site[i]], ',', sim)
             nume = nume + df.at[hour, city_site[i]] * sim
             deno = deno + sim
-    #print(nume / deno)
+    #  print(nume/deno)
     return (nume / deno)
 
 
@@ -128,18 +137,23 @@ def sim_icf(df, h1, h2, city_site):
 def ICF(df, hour, loc, omega, city_site):
     start = hour - (omega - 1) / 2
     end = hour + (omega - 1) / 2
+    if hour == 0:
+        start = 1
+        end = start + omega
     if start < 0:
         start = 0
     if end > 23:
         end = 23
     nume = 0
     deno = 0
+    #  print("I am in ICF")
+    #  print((start,end))
     for i in range(int(start), int(end)):
         if i != hour and not (pd.isnull(df.at[i, loc])):
             sim = sim_icf(df, i, hour, city_site)
             nume = nume + df.at[i, loc] * sim
             deno = deno + sim
-    #print(nume / deno)
+    #  print(nume/deno)
     return (nume / deno)
 
 
@@ -180,27 +194,26 @@ def FMV(df, omega, alpha, beta, city_site):
     for i in range(length):
         length2 = len(miss_items[i][2])
         for m in range(length2):
+            if not miss_items[i][0]:  # 若数据没有发生缺失
+                continue
             if not miss_items[i][1] and not miss_block[miss_items[i][2][m]]:  # 表示只是普通的缺失，而不是block_missing
+                # print((miss_items[i][2][m],city_site[i]))
                 val1 = ICF(df, miss_items[i][2][m], city_site[i], omega, city_site)
                 val2 = UCF(df, miss_items[i][2][m], city_site[i], omega, city_site)
-                #print(val1)
-                #print(val2)
                 mean = (val1 + val2) / 2
-                #print("mean:%f" % (mean))
+                # print("mean:%f"%(mean))
                 df.at[miss_items[i][2][m], city_site[i]] = mean
             if miss_items[i][1] or miss_block[miss_items[i][2][m]]:  # 如果发生一个地点所有时间戳都没有数据则发生block_missing
-                val1 = 0
-                val2 = 0
-                count = 0
-                if miss_items[i][1]:
-                    val1 = IDW(df, miss_items[i][2][m], city_site[i], alpha, city_site)
-                    count = count + 1
-                if miss_block[miss_items[i][2][m]]:
-                    val2 = SES(df, miss_items[i][2][m], city_site[i], beta)
-                    count = count + 1
-                val = (val1 + val2) / count
-                #print("val:%f" % (val))
-                df.at[miss_items[i][2][m], city_site[i]] = val
+
+                if miss_items[i][1] and not miss_block[miss_items[i][2][m]]:
+                    val = IDW(df, miss_items[i][2][m], city_site[i], alpha, city_site)
+                    # print("val:%f"%(val))
+                    df.at[miss_items[i][2][m], city_site[i]] = val
+                elif miss_block[miss_items[i][2][m]] and not miss_items[i][1]:
+                    val = SES(df, miss_items[i][2][m], city_site[i], beta)
+                    #   print("val:%f"%(val))
+                    df.at[miss_items[i][2][m], city_site[i]] = val
+    # 下列语句可以处理上述遗留的列缺失和行缺失
     for i in range(length):
         length2 = len(miss_items[i][2])
         for m in range(length2):
@@ -211,10 +224,6 @@ def FMV(df, omega, alpha, beta, city_site):
                 df.at[miss_items[i][2][m], city_site[i]] = mean
     # print(miss_items)
     # print(df)
-    print('success')
     return df
 
 
-#dfff = FMV(data_final, 7, 4, 0.85, city_site)
-
-#dfff.to_json('a.json')

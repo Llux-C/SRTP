@@ -210,9 +210,7 @@ def getValue():
     fill = int(fill)
 
     empty = pd.read_csv(r'./data/empty.csv')
-    loc_file = pd.read_csv("./data/site_list.csv")
-    site_list = loc_file['监测点编码']
-    site_list = site_list.tolist()
+    site_list = pd.read_csv("site_list.csv")
 
     # city = '北京'
     # date = '20170101'
@@ -220,18 +218,22 @@ def getValue():
     # fill = 0
 
     file = './data/站点_20170101-20171231/china_sites_' + date + '.csv'
-    city_site = loc_file.loc[loc_file['城市'] == city]['监测点编码']
-    col_name = loc_file[loc_file['城市'] == city]['监测点编码'].tolist()
-    col_name.append('date')
-    col_name.append('hour')
-    col_name.append('type')
-    data_df = pd.read_csv(file)
-    data_df = data_df[data_df['type'] == pollu]
-    # df_site = pd.DataFrame(columns=col_name)
-    # data_df = pd.merge(df_site, data_df, how='right')
-    data_df = data_df.loc[:, col_name]
-    data_final = pd.merge(empty, data_df, how='left')
-    data_final = data_final.drop(['type', 'date'], axis=1)
+    f = pd.read_csv(file)
+    f1 = f.loc[f['type'] == pollu]
+
+    city_site = list(site_list.loc[site_list['城市'] == city]['监测点编码'])
+    column_headers = list(f1.columns.values)
+    new_city_site = []
+    for i in range(len(city_site)):
+        if city_site[i] not in column_headers:
+            continue
+        new_city_site.append(city_site[i])
+    print(new_city_site)
+    city_site = new_city_site
+    f2 = f1[new_city_site]
+    f3 = f1['hour']
+    data_final = pd.concat([f3, f2], axis=1)
+    data_final = pd.merge(empty, data_final, how='left')
     # 生成对应json格式内容
 
     if fill == 0:
@@ -255,7 +257,7 @@ def getValue():
         print(json_dict)
         return json.dumps(json_dict, cls=MyEncoder, indent=4)
     else:
-        data_final = FMV(data_final, 7, 4, 0.85, city_site)
+        data_final = FMV(data_final,10,5,5,city_site)
         data_final.astype(str)
         data_final = data_final.apply(lambda x: x.replace('\n', '').replace('\r', ''))
         json_dict = {}
