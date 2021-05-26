@@ -15,7 +15,7 @@ BASE_DIR = os.path.abspath(os.path.dirname(__file__))
 
 # uri统一资源匹配符
 # SQLALCHEMY_DATABASE_URI配置数据库连接的参数
-app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://root:1234@10.181.226.47:3306/test'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://root:1234@10.181.194.173:3306/test'
 
 # 请求结束后自动提交数据库修改
 app.config['SQLALCHEMY_COMMMIT_ON_TEARDOWN'] = True
@@ -65,7 +65,8 @@ def getSiteList():
     # sites = models.session.query(sites_list).filter(sites_list.city == '北京').all()
     all_sites = []
     for site in sites:
-        all_sites.append(site.id)
+        if str(site.id)< "2711A":
+            all_sites.append(site.id)
     sites_dict = {"sites_list": all_sites}
     print(sites_dict)
     return json.dumps(sites_dict, cls=MyEncoder, indent=4)
@@ -210,7 +211,7 @@ def getValue():
     fill = int(fill)
 
     empty = pd.read_csv(r'./data/empty.csv')
-    site_list = pd.read_csv("site_list.csv")
+    site_list = pd.read_csv("./data/site_list.csv")
 
     # city = '北京'
     # date = '20170101'
@@ -228,7 +229,7 @@ def getValue():
         if city_site[i] not in column_headers:
             continue
         new_city_site.append(city_site[i])
-    print(new_city_site)
+    # print(new_city_site)
     city_site = new_city_site
     f2 = f1[new_city_site]
     f3 = f1['hour']

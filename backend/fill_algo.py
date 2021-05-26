@@ -5,7 +5,7 @@ import numpy as np
 import glob,os
 
 empty = pd.read_csv(r'./data/empty.csv')
-site_list = pd.read_csv("site_list.csv")
+site_list = pd.read_csv("./data/site_list.csv")
 
 
 # 用于将角度转换为弧度

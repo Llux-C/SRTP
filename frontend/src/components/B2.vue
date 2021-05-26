@@ -119,9 +119,9 @@ export default {
               for (let j = 1; j < this.columns.length; j++) {
                 let param = this.columns[j].title;
 
-                // console.log(param)
                 // console.log(res.data)
-                console.log(res.data)
+                // console.log(param)
+                // console.log(res.data[param])
                 var todo = res.data[param][i]
 
                 var dot = String(todo).indexOf(".");
